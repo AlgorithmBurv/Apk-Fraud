@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dataset Analysis</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="static/upload.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <i class="fas fa-university"></i> NOMADS
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('currency') }}"
+                >Currency Exchange</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('history') }}"
+                >History</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('upload') }}">Upload</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Section -->
+    <div class="container">
+      <div class="card">
+        <h1 class="text-center">Dataset Analysis</h1>
+        <p class="text-center text-muted">
+          Explore and understand your dataset effortlessly. Upload your CSV
+          file, choose a classifier, and let our analysis tool generate valuable
+          insights to support your data-driven decisions.
+        </p>
+        <form method="POST" enctype="multipart/form-data" class="mt-4">
+          <div class="mb-3">
+            <label for="file" class="form-label">Upload CSV File</label>
+            <div class="file-upload">
+              <input
+                type="file"
+                class="form-control-file"
+                id="file"
+                name="file"
+                accept=".csv"
+                required
+              />
+              <p class="mt-2 text-muted">
+                Drag & drop your file here or select it from your folder
+              </p>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="classifier" class="form-label">Select Classifier</label>
+            <select class="form-select" id="classifier" name="classifier">
+              <option value="Random Forest">Random Forest</option>
+              <option value="XGBoost">XGBoost</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success">Start Analysis</button>
+        </form>
+      </div>
+
+      <!-- Evaluation Results -->
+      {% if evaluation_results %}
+      <div class="card mt-5">
+        <h3 class="text-center">Evaluation Results</h3>
+        <table class="table table-bordered table-hover mt-3">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for key, value in evaluation_results.items() %}
+            <tr>
+              <td><strong>{{ key }}</strong></td>
+              <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- Tampilkan Data Prepiew -->
+      <div class="card mt-4">
+        <h4 class="text-center">Data Preview</h4>
+        <div class="table-responsive scrollable-table">{{ preview|safe }}</div>
+      </div>
+      <!-- Tampilkan visualisasi confusion matrix -->
+      <div class="card mt-4">
+        <h4 class="text-center">Confusion Matrix</h4>
+        <div class="text-center">
+          <img
+            src="data:image/png;base64,{{ confusion_matrix_plot }}"
+            alt="Confusion Matrix"
+            class="img-fluid"
+          />
+        </div>
+      </div>
+      <!-- Visualisasi Distribusi Transaksi Fraud dan Non-Fraud -->
+      <div class="card mt-4">
+        <h4 class="text-center">Distribusi Transaksi Fraud dan Non-Fraud</h4>
+        <div class="text-center">
+          <img
+            src="data:image/png;base64,{{ fraud_distribution_plot }}"
+            alt="Distribusi Transaksi"
+            class="img-fluid"
+          />
+        </div>
+      </div>
+
+      {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

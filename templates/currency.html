@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Currency Exchange & Converter</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="static/currency.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <i class="fas fa-university"></i> NOMADS
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('currency') }}"
+                >Currency Exchange</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('history') }}"
+                >History</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('upload') }}">Upload</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Section Container -->
+    <div class="container section">
+      <div class="card text-center">
+        <h2>Currency Converter</h2>
+        <p class="text-muted">
+          Convert your USD into multiple currencies with live exchange rates!
+        </p>
+        <table class="table table-bordered table-hover table-light mt-4">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Currency Name</th>
+              <th>Code</th>
+              <th>Exchange Rate per 1 USD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Indonesian Rupiah</td>
+              <td>IDR</td>
+              <td>{{ exchange_rates["IDR"] }}</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Singapore Dollar</td>
+              <td>SGD</td>
+              <td>{{ exchange_rates["SGD"] }}</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Tanzanian Shilling</td>
+              <td>TZS</td>
+              <td>{{ exchange_rates["TZS"] }}</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Chinese Yuan</td>
+              <td>CNY</td>
+              <td>{{ exchange_rates["CNY"] }}</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Euro</td>
+              <td>EUR</td>
+              <td>{{ exchange_rates["EUR"] }}</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Indian Rupee</td>
+              <td>INR</td>
+              <td>{{ exchange_rates["INR"] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Form Converter -->
+      <div class="card text-center mt-5">
+        <h2>Convert Currency</h2>
+        <form method="POST" class="mt-4">
+          <div class="mb-3">
+            <label for="amount" class="form-label">Amount (USD):</label>
+            <input
+              type="number"
+              class="form-control"
+              id="amount"
+              name="amount"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="currency" class="form-label">Select Currency:</label>
+            <select class="form-select" id="currency" name="currency" required>
+              <option value="IDR">Indonesian Rupiah (IDR)</option>
+              <option value="SGD">Singapore Dollar (SGD)</option>
+              <option value="TZS">Tanzanian Shilling (TZS)</option>
+              <option value="CNY">Chinese Yuan (CNY)</option>
+              <option value="EUR">Euro (EUR)</option>
+              <option value="INR">Indian Rupee (INR)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Convert</button>
+        </form>
+
+        <!-- Hasil Konversi -->
+        {% if converted_amount %}
+        <div class="alert alert-success mt-4">
+          <p>
+            Exchange Rate: 1 USD = {{ exchange_rate }} {{ request.form.currency
+            }}
+          </p>
+          <p>
+            Converted Amount: {{ converted_amount | round(2) }} {{
+            request.form.currency }}
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

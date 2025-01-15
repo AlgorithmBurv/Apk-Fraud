@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fraud Transaction Prediction</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="static/index.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <i class="fas fa-university"></i> NOMADS
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('currency') }}"
+                >Currency Exchange</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('history') }}"
+                >History</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('upload') }}">Upload</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Form Transaction Prediction -->
+    <div class="container section">
+      <div class="card">
+        <h2 class="text-center">Transaction Prediction Form</h2>
+        <p class="text-center text-muted">
+          This form allows you to input transaction details to predict the
+          likelihood of fraud using machine learning models. Fill in all fields
+          and click "Predict" to see the result.
+        </p>
+        <form method="POST" action="/predict" class="mt-4">
+          <div class="mb-3">
+            <label for="step" class="form-label">Step (Time Unit)</label>
+            <input
+              type="number"
+              class="form-control"
+              id="step"
+              name="step"
+              placeholder="Enter step value"
+              min="0"
+              max="743"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="type" class="form-label">Transaction Type</label>
+            <select class="form-select" id="type" name="type" required>
+              <option value="">Select transaction type</option>
+              <option value="0">Cash-In</option>
+              <option value="1">Cash-Out</option>
+              <option value="2">Debit</option>
+              <option value="3">Payment</option>
+              <option value="4">Transfer</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="type2" class="form-label">Sub-Transaction Type</label>
+            <select class="form-select" id="type2" name="type2" required>
+              <option value="">Select sub-transaction type</option>
+              <option value="0">Customer to Customer(CC)</option>
+              <option value="1">Customer to Merchant (CM)</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="amount" class="form-label">Transaction Amount</label>
+            <input
+              type="number"
+              class="form-control"
+              id="amount"
+              name="amount"
+              placeholder="Enter transaction amount"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="oldbalanceOrig" class="form-label"
+              >Sender's Old Balance</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="oldbalanceOrig"
+              name="oldbalanceOrig"
+              placeholder="Enter sender's old balance"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="newbalanceOrig" class="form-label"
+              >Sender's New Balance</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="newbalanceOrig"
+              name="newbalanceOrig"
+              placeholder="Enter sender's new balance"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="oldbalanceDest" class="form-label"
+              >Recipient's Old Balance</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="oldbalanceDest"
+              name="oldbalanceDest"
+              placeholder="Enter recipient's old balance"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="newbalanceDest" class="form-label"
+              >Recipient's New Balance</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="newbalanceDest"
+              name="newbalanceDest"
+              placeholder="Enter recipient's new balance"
+              step="0.01"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Predict</button>
+        </form>
+      </div>
+
+      <!-- Batch Prediction Form -->
+      <div class="card mt-5">
+        <h2 class="text-center">Transaction Batch Prediction Form</h2>
+        <p class="text-center text-muted">
+          Upload a CSV file containing multiple transactions to perform batch
+          predictions. Ensure the file format follows the standard CSV
+          structure.
+        </p>
+        <form
+          method="POST"
+          action="/predict"
+          enctype="multipart/form-data"
+          class="mt-4"
+        >
+          <div class="mb-3">
+            <label for="file" class="form-label">Upload CSV File</label>
+            <input
+              type="file"
+              class="form-control"
+              id="file"
+              name="file"
+              accept=".csv"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-success">Batch Predict</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="container section">
+      <div class="card">
+        <!-- Prediction Results -->
+        <div class="container mb-5">
+          {% if prediction_text %}
+          <div class="alert alert-info text-center">{{ prediction_text }}</div>
+          {% elif result_table %}
+          <h3 class="text-center">Batch Prediction Results:</h3>
+
+          <!-- Download -->
+          <div class="d-flex justify-content-end gap-4 my-3">
+            <a href="/download_csv" class="btn btn-lg">
+              <i class="fas fa-file-csv"></i> Download CSV
+            </a>
+            <a href="/download_excel" class="btn btn-lg">
+              <i class="fas fa-file-excel"></i> Download Excel
+            </a>
+          </div>
+          <!-- Tabel Batch -->
+          <div
+            class="table-responsive position-relative"
+            style="max-height: 400px; overflow-y: auto"
+          >
+            <table class="table table-bordered mt-3">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Step</th>
+                  <th>Type</th>
+                  <th>Type 2</th>
+                  <th>Amount</th>
+                  <th>Old Balance Orig</th>
+                  <th>New Balance Orig</th>
+                  <th>Old Balance Dest</th>
+                  <th>New Balance Dest</th>
+                  <th>Prediction</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in result_table %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ row['step'] }}</td>
+                  <td>{{ row['type'] }}</td>
+                  <td>{{ row['type2'] }}</td>
+                  <td>{{ row['amount'] }}</td>
+                  <td>{{ row['oldbalanceOrig'] }}</td>
+                  <td>{{ row['newbalanceOrig'] }}</td>
+                  <td>{{ row['oldbalanceDest'] }}</td>
+                  <td>{{ row['newbalanceDest'] }}</td>
+                  <td>{{ row['isFraud'] }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="alert alert-warning text-center">
+            No data available for display.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

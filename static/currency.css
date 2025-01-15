@@ -1,0 +1,80 @@
+body {
+  background-color: #f4f8fb;
+  font-family: "Poppins", sans-serif;
+}
+
+.navbar {
+  background-color: #0b3d91;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #ffdd57 !important;
+}
+
+.nav-link {
+  color: #fff !important;
+  font-size: 1.1rem;
+  margin-right: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+  background-color: #ffdd57;
+  color: #0b3d91 !important;
+  border-radius: 20px;
+  padding: 10px;
+}
+
+.section {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background-color: #fff;
+  border: none;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-weight: bold;
+  color: #0b3d91;
+}
+
+.table th {
+  background-color: #0b3d91;
+  color: white;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #e6f7ff;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #0b3d91;
+}
+
+.btn-primary {
+  background-color: #0b3d91;
+  border: none;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #004080;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-radius: 10px;
+}
