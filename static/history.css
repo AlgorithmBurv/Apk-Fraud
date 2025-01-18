@@ -1,0 +1,77 @@
+body {
+  background-color: #f4f8fb;
+  font-family: "Poppins", sans-serif;
+}
+h1 {
+  font-weight: bold;
+  color: #0b3d91;
+}
+h2 {
+  font-weight: bold;
+  color: #0b3d91;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: #0b3d91;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #ffdd57 !important;
+}
+
+.nav-link {
+  color: #fff !important;
+  font-size: 1.1rem;
+  margin-right: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+  background-color: #ffdd57;
+  color: #0b3d91 !important;
+  border-radius: 20px;
+  padding: 10px;
+}
+
+.section {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+/* Card styling */
+.card {
+  background-color: #fff;
+  border: none;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect pada baris tabel */
+.table-hover tbody tr:hover {
+  background-color: #f1f1f9;
+  transform: scale(1.02);
+  transition: all 0.2s ease-in-out;
+}
+
+.badge {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Warna judul (h2) */
+h2 {
+  font-size: 2rem;
+  color: #004080;
+}
+
+/* Pastikan teks di sel tabel berada di tengah */
+td,
+th {
+  text-align: center;
+}

@@ -1,32 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!--
+      <head> section:
+      - Menentukan karakter encoding, meta viewport untuk responsif
+      - Menambahkan judul halaman
+      - Menyertakan link CSS & library Bootstrap, Font Awesome, Google Fonts, dsb.
+    -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fraud Transaction Prediction</title>
+
+    <!-- Font Awesome untuk ikon -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
       rel="stylesheet"
     />
+
+    <!-- Google Fonts (Poppins) -->
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
 
+    <!-- File CSS eksternal (index.css) -->
     <link rel="stylesheet" href="static/index.css" />
   </head>
 
   <body>
-    <!-- Navbar -->
+    <!--
+      Navbar:
+      - Menggunakan class bootstrap 'navbar navbar-expand-lg navbar-dark'
+      - Memiliki brand "NOMADS" dan beberapa link navigasi.
+    -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container-fluid">
+        <!-- Brand -->
         <a class="navbar-brand" href="#">
           <i class="fas fa-university"></i> NOMADS
         </a>
+        <!-- Tombol toggle navbar (untuk tampilan mobile) -->
         <button
           class="navbar-toggler"
           type="button"
@@ -38,31 +57,41 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+        <!-- Daftar link navbar -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto">
+            <!-- Link: Home -->
             <li class="nav-item">
               <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
             </li>
+            <!-- Link: Currency Exchange -->
             <li class="nav-item">
               <a class="nav-link active" href="{{ url_for('currency') }}"
                 >Currency Exchange</a
               >
             </li>
+            <!-- Link: History -->
             <li class="nav-item">
               <a class="nav-link active" href="{{ url_for('history') }}"
                 >History</a
               >
             </li>
+            <!-- Link: Training -->
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('upload') }}">Upload</a>
+              <a class="nav-link" href="{{ url_for('upload') }}">Training</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
 
-    <!-- Form Transaction Prediction -->
+    <!--
+      Container utama yang menampung dua card:
+      1) Transaction Prediction Form (single prediction)
+      2) Transaction Batch Prediction Form (batch)
+    -->
     <div class="container section">
+      <!-- Card pertama: Single Transaction Prediction -->
       <div class="card">
         <h2 class="text-center">Transaction Prediction Form</h2>
         <p class="text-center text-muted">
@@ -70,7 +99,13 @@
           likelihood of fraud using machine learning models. Fill in all fields
           and click "Predict" to see the result.
         </p>
+
+        <!--
+          Form POST ke /predict untuk single transaction
+          Menerima data transaction (step, type, amount, dsb.)
+        -->
         <form method="POST" action="/predict" class="mt-4">
+          <!-- Step -->
           <div class="mb-3">
             <label for="step" class="form-label">Step (Time Unit)</label>
             <input
@@ -84,6 +119,8 @@
               required
             />
           </div>
+
+          <!-- Transaction Type -->
           <div class="mb-3">
             <label for="type" class="form-label">Transaction Type</label>
             <select class="form-select" id="type" name="type" required>
@@ -95,6 +132,8 @@
               <option value="4">Transfer</option>
             </select>
           </div>
+
+          <!-- Sub-Transaction Type -->
           <div class="mb-3">
             <label for="type2" class="form-label">Sub-Transaction Type</label>
             <select class="form-select" id="type2" name="type2" required>
@@ -103,6 +142,8 @@
               <option value="1">Customer to Merchant (CM)</option>
             </select>
           </div>
+
+          <!-- Transaction Amount -->
           <div class="mb-3">
             <label for="amount" class="form-label">Transaction Amount</label>
             <input
@@ -115,6 +156,8 @@
               required
             />
           </div>
+
+          <!-- Sender's Old Balance -->
           <div class="mb-3">
             <label for="oldbalanceOrig" class="form-label"
               >Sender's Old Balance</label
@@ -129,6 +172,8 @@
               required
             />
           </div>
+
+          <!-- Sender's New Balance -->
           <div class="mb-3">
             <label for="newbalanceOrig" class="form-label"
               >Sender's New Balance</label
@@ -143,6 +188,8 @@
               required
             />
           </div>
+
+          <!-- Recipient's Old Balance -->
           <div class="mb-3">
             <label for="oldbalanceDest" class="form-label"
               >Recipient's Old Balance</label
@@ -157,6 +204,8 @@
               required
             />
           </div>
+
+          <!-- Recipient's New Balance -->
           <div class="mb-3">
             <label for="newbalanceDest" class="form-label"
               >Recipient's New Balance</label
@@ -171,11 +220,13 @@
               required
             />
           </div>
+
+          <!-- Tombol Predict -->
           <button type="submit" class="btn btn-primary">Predict</button>
         </form>
       </div>
 
-      <!-- Batch Prediction Form -->
+      <!-- Card kedua: Batch Prediction Form -->
       <div class="card mt-5">
         <h2 class="text-center">Transaction Batch Prediction Form</h2>
         <p class="text-center text-muted">
@@ -183,6 +234,11 @@
           predictions. Ensure the file format follows the standard CSV
           structure.
         </p>
+
+        <!--
+          Form dengan enctype="multipart/form-data" untuk upload CSV file
+          juga dikirim ke /predict (POST).
+        -->
         <form
           method="POST"
           action="/predict"
@@ -205,16 +261,25 @@
       </div>
     </div>
 
+    <!--
+      Container section lain untuk menampilkan:
+      - Hasil prediksi single transaction (prediction_text)
+      - Hasil batch prediction (result_table)
+      - Tombol Download CSV / Excel jika hasil batch tersedia
+    -->
     <div class="container section">
       <div class="card">
         <!-- Prediction Results -->
         <div class="container mb-5">
           {% if prediction_text %}
+          <!-- Jika single prediction berhasil, tampilkan alert info -->
           <div class="alert alert-info text-center">{{ prediction_text }}</div>
+
           {% elif result_table %}
+          <!-- Jika batch prediction, tampilkan tabel -->
           <h3 class="text-center">Batch Prediction Results:</h3>
 
-          <!-- Download -->
+          <!-- Bagian Download (CSV / Excel) -->
           <div class="d-flex justify-content-end gap-4 my-3">
             <a href="/download_csv" class="btn btn-lg">
               <i class="fas fa-file-csv"></i> Download CSV
@@ -223,7 +288,8 @@
               <i class="fas fa-file-excel"></i> Download Excel
             </a>
           </div>
-          <!-- Tabel Batch -->
+
+          <!-- Tabel Batch Prediction -->
           <div
             class="table-responsive position-relative"
             style="max-height: 400px; overflow-y: auto"
@@ -244,6 +310,7 @@
                 </tr>
               </thead>
               <tbody>
+                <!-- Looping baris data result_table (hasil batch) -->
                 {% for row in result_table %}
                 <tr>
                   <td>{{ loop.index }}</td>
@@ -261,7 +328,9 @@
               </tbody>
             </table>
           </div>
+
           {% else %}
+          <!-- Jika tidak ada data (tidak single prediction, tidak batch) -->
           <div class="alert alert-warning text-center">
             No data available for display.
           </div>
@@ -270,6 +339,10 @@
       </div>
     </div>
 
+    <!--
+      Script Bootstrap JS untuk komponen interaktif.
+      Berisi bundle minified (popper + bootstrap.js)
+    -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

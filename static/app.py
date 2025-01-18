@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, make_response, session
+from flask import Flask, render_template, request, send_file, make_response
 
 import pandas as pd
 import numpy as np
@@ -28,7 +28,6 @@ import csv
 # Load model
 model = load('model_rfc_done.joblib')
 history_data = []
-app.secret_key = 'my_secret_key'  # Diperlukan untuk session Flask
 
 # Menyimpan hasil prediksi global untuk download batch
 batch_prediction_df = None
@@ -43,8 +42,6 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     global batch_prediction_df  # Agar bisa diakses pada route download
-    if 'history_data' not in session:
-    session['history_data'] = []  # Inisialisasi session jika belum ada
     if request.method == 'POST':
         if 'file' in request.files and request.files['file'].filename != '':
             file = request.files['file']
@@ -80,8 +77,8 @@ def predict():
         result = label_map[prediction[0]]
 
 
-        # Simpan hasil prediksi ke session
-        session['history_data'].append({
+        # Menyimpan hasil prediksi manual ke list
+        history_data.append({
             'Step': step,
             'Type': type_,
             'Type2': type2,
@@ -92,7 +89,6 @@ def predict():
             'New Balance Dest': newbalanceDest,
             'Prediction': result
         })
-        session.modified = True  # Agar perubahan dalam session disimpan
 
 
         return render_template('index.html', prediction_text=f'Hasil Prediksi: {result}')
@@ -227,51 +223,37 @@ def upload():
 #  Page: History
 @app.route('/history')
 def history():
-    history_data = session.get('history_data', [])  # Mengambil data dari session
     if not history_data:
         return "Belum ada riwayat prediksi."
 
     return render_template('history.html', history_data=history_data)
 
-# Download history as CSV
+
+# History download
 @app.route('/download_history_csv')
 def download_history_csv():
-    history_data = session.get('history_data', [])  # Mengambil data dari session
-    if not history_data:
+    if os.path.exists(HISTORY_FILE):
+        return send_file(HISTORY_FILE,
+                         mimetype='text/csv',
+                         download_name='transaction_history.csv',  # Ganti attachment_filename
+                         as_attachment=True)
+    else:
         return "No history available for download", 400
 
-    # Konversi list of dict ke DataFrame
-    df = pd.DataFrame(history_data)
-    csv_buffer = StringIO()
-    df.to_csv(csv_buffer, index=False)
-    csv_buffer.seek(0)
-
-    # Mengirimkan file sebagai response
-    response = Response(csv_buffer.getvalue(), mimetype='text/csv')
-    response.headers["Content-Disposition"] = "attachment; filename=transaction_history.csv"
-    return response
-
-# Download history as Excel
 @app.route('/download_history_excel')
 def download_history_excel():
-    history_data = session.get('history_data', [])  # Mengambil data dari session
-    if not history_data:
+    if os.path.exists(HISTORY_FILE):
+        df = pd.read_csv(HISTORY_FILE)
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='History')
+        output.seek(0)
+        return send_file(output,
+                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                         download_name='transaction_history.xlsx',  # Ganti attachment_filename
+                         as_attachment=True)
+    else:
         return "No history available for download", 400
-
-    # Konversi list of dict ke DataFrame
-    df = pd.DataFrame(history_data)
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False, sheet_name='History')
-    output.seek(0)
-
-    # Mengirimkan file sebagai response
-    return send_file(output,
-                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                     download_name='transaction_history.xlsx',
-                     as_attachment=True)
-
-
 
 
 # Page: Currency
