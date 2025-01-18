@@ -31,13 +31,7 @@
   </head>
 
   <body>
-    <!--
-      Navbar menggunakan Bootstrap dengan gaya "navbar-dark" di bagian atas halaman.
-      Menyertakan:
-      - brand "NOMADS"
-      - tombol toggle untuk tampilan mobile
-      - link navigasi ke halaman lain (Home, Currency Exchange, History, Training).
-    -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
@@ -55,10 +49,11 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <!-- Menu navigasi di sisi kanan (ms-auto) -->
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
+              <a class="nav-link active" href="{{ url_for('home') }}"
+                >Prediction</a
+              >
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="{{ url_for('currency') }}"

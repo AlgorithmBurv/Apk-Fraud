@@ -34,18 +34,12 @@
   </head>
 
   <body>
-    <!--
-      Navbar:
-      - Menggunakan class bootstrap 'navbar navbar-expand-lg navbar-dark'
-      - Memiliki brand "NOMADS" dan beberapa link navigasi.
-    -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container-fluid">
-        <!-- Brand -->
         <a class="navbar-brand" href="#">
           <i class="fas fa-university"></i> NOMADS
         </a>
-        <!-- Tombol toggle navbar (untuk tampilan mobile) -->
         <button
           class="navbar-toggler"
           type="button"
@@ -57,26 +51,23 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <!-- Daftar link navbar -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav ms-auto">
-            <!-- Link: Home -->
             <li class="nav-item">
-              <a class="nav-link active" href="{{ url_for('home') }}">Home</a>
+              <a class="nav-link active" href="{{ url_for('home') }}"
+                >Prediction</a
+              >
             </li>
-            <!-- Link: Currency Exchange -->
             <li class="nav-item">
               <a class="nav-link active" href="{{ url_for('currency') }}"
                 >Currency Exchange</a
               >
             </li>
-            <!-- Link: History -->
             <li class="nav-item">
               <a class="nav-link active" href="{{ url_for('history') }}"
                 >History</a
               >
             </li>
-            <!-- Link: Training -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('upload') }}">Training</a>
             </li>
