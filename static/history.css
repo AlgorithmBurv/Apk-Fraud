@@ -11,7 +11,6 @@ h2 {
   color: #0b3d91;
 }
 
-/* Navbar styling */
 .navbar {
   background-color: #0b3d91;
   padding: 1rem 2rem;
@@ -43,7 +42,6 @@ h2 {
   margin-bottom: 30px;
 }
 
-/* Card styling */
 .card {
   background-color: #fff;
   border: none;
@@ -52,25 +50,17 @@ h2 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Hover effect pada baris tabel */
 .table-hover tbody tr:hover {
   background-color: #f1f1f9;
   transform: scale(1.02);
   transition: all 0.2s ease-in-out;
 }
 
-.badge {
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-}
-
-/* Warna judul (h2) */
 h2 {
   font-size: 2rem;
   color: #004080;
 }
 
-/* Pastikan teks di sel tabel berada di tengah */
 td,
 th {
   text-align: center;

@@ -1,4 +1,0 @@
-flask
-numpy
-gunicorn
-scikit-learn

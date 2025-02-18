@@ -2,63 +2,35 @@
 # =          Import Libraries and Dependencies         =
 # ======================================================
 from flask import Flask, render_template, request, send_file, make_response, Response
-# Flask: framework untuk membangun web application.
-# render_template: untuk merender file HTML.
-# request: menangani data yang dikirim melalui form, dsb.
-# send_file: mengirimkan file sebagai response HTTP.
-# make_response: membuat response HTTP secara manual.
-# Response: class untuk membuat/memanipulasi HTTP response.
 
 import pandas as pd
-# Pandas: library untuk manipulasi data (DataFrame, CSV, dsb.).
 import numpy as np
-# NumPy: library untuk operasi numerik.
-
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
-# train_test_split: memecah data menjadi train & test.
-# KFold: K-Fold cross-validation.
-# cross_val_score: menilai performa model dengan k-fold CV.
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
-# Berbagai metric untuk mengevaluasi model klasifikasi.
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-# RandomForestClassifier: model ensemble berbasis pohon keputusan.
 import xgboost as xgb
-# XGBoost: model ensemble gradient boosting yang populer.
 from joblib import load
-# load: untuk memuat model yang sudah di-pickle (disimpan).
-
 import requests
-# requests: library untuk melakukan HTTP requests.
-
 import base64
-# base64: untuk encoding/decoding data, misalnya gambar menjadi base64.
 from io import BytesIO, StringIO
-# BytesIO, StringIO: menampung data di memori sebagai file-like object.
-
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
-# Mengatur matplotlib agar tidak menggunakan GUI backend.
 import seaborn as sns
-# seaborn: library visualisasi yang dibangun di atas matplotlib.
-
 import os
-# os: untuk operasi sistem (file path, environment, dsb.).
 import csv
-# csv: untuk membaca/menulis file CSV secara manual (jika diperlukan).
+import time
 
 # ======================================================
 # =                Model and Global Data               =
 # ======================================================
 
-# Load model yang sudah dilatih sebelumnya
-model = load('model_rfc_done.joblib')
-# Variable untuk menampung data riwayat prediksi single
-history_data = []
+model = load('model_rfc.joblib')
 
-# Menyimpan hasil prediksi batch secara global (DataFrame),
-# agar bisa didownload dalam format CSV atau Excel.
-batch_prediction_df = None
+history_data = [] #page: history
+
+batch_prediction_df = None #page: prediction
 
 # ======================================================
 # =           Flask Application Initialization         =
@@ -66,11 +38,10 @@ batch_prediction_df = None
 app = Flask(__name__)
 
 # ======================================================
-# =                    Home Page                       =
+# =                    Prediction Page                       =
 # ======================================================
 @app.route('/')
 def home():
-    # Render template 'index.html' ketika user membuka root URL
     return render_template('index.html')
 
 # ======================================================
@@ -85,7 +56,7 @@ def predict():
             file = request.files['file']
             df = pd.read_csv(file)
             # Pastikan CSV sesuai dengan kolom yang diharapkan
-            expected_columns = ['step', 'type', 'type2', 'amount', 'oldbalanceOrig', 'newbalanceOrig', 'oldbalanceDest', 'newbalanceDest']
+            expected_columns = ['step', 'type', 'type2', 'amount','nameOrig', 'oldbalanceOrig', 'newbalanceOrig', 'nameDest', 'oldbalanceDest', 'newbalanceDest']
             if not all(col in df.columns for col in expected_columns):
                 # Jika kolom tidak sesuai, render 'index.html' dengan pesan error
                 return render_template('index.html', error_text="CSV tidak sesuai format. Harap pastikan kolom sesuai.")
@@ -97,7 +68,7 @@ def predict():
             # Simpan DataFrame prediksi ke variabel global
             batch_prediction_df = df
 
-            # Tampilkan 20.000 baris pertama (bisa disesuaikan) sebagai contoh
+            # Tampilkan 20.000 baris pertama sebagai contoh
             result_data = df.head(20000).to_dict(orient='records')
             return render_template('index.html', result_table=result_data)
 
@@ -106,13 +77,15 @@ def predict():
         type_ = int(request.form['type'])
         type2 = int(request.form['type2'])
         amount = float(request.form['amount'])
+        nameOrig = int(request.form['nameOrig'])
         oldbalanceOrig = float(request.form['oldbalanceOrig'])
         newbalanceOrig = float(request.form['newbalanceOrig'])
+        nameDest = int(request.form['nameDest'])
         oldbalanceDest = float(request.form['oldbalanceDest'])
         newbalanceDest = float(request.form['newbalanceDest'])
 
         # Bentuk input menjadi array 2D karena model memerlukan shape (n_samples, n_features)
-        input_data = np.array([[step, type_, type2, amount, oldbalanceOrig, newbalanceOrig, oldbalanceDest, newbalanceDest]])
+        input_data = np.array([[step, type_, type2, amount, nameOrig, oldbalanceOrig, newbalanceOrig, nameDest, oldbalanceDest, newbalanceDest]])
         prediction = model.predict(input_data)
         # Mapping label numerik ke teks
         label_map = {0: 'Non-Fraud', 1: 'Fraud'}
@@ -124,8 +97,10 @@ def predict():
             'Type': type_,
             'Type2': type2,
             'Amount': amount,
+            'Name Orig': nameOrig,
             'Old Balance Orig': oldbalanceOrig,
             'New Balance Orig': newbalanceOrig,
+            'Name Dest': nameDest,
             'Old Balance Dest': oldbalanceDest,
             'New Balance Dest': newbalanceDest,
             'Prediction': result
@@ -171,9 +146,10 @@ def download_excel():
 # ======================================================
 # =              Training Page and Logic               =
 # ======================================================
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
-    # Form untuk upload file CSV dan melatih model baru (atau menampilkan evaluasi).
+@app.route('/training', methods=['GET', 'POST'])
+def training():
+
+    # Form untuk upload file CSV dan melatih model baru.
     if request.method == 'POST':
         file = request.files['file']
         if file:
@@ -185,17 +161,28 @@ def upload():
             y = df.isFraud
 
             # Train-test split
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
             # Pilih classifier berdasarkan pilihan user (Random Forest atau XGBoost)
             classifier_option = request.form['classifier']
-            if classifier_option == "Random Forest":
+            if classifier_option == "Decision Tree":
+                model = DecisionTreeClassifier(random_state=42)
+            elif classifier_option == "Random Forest":
                 model = RandomForestClassifier(random_state=42)
             else:
                 model = xgb.XGBClassifier(random_state=42)
 
+            # mulai menghitung training
+            start_time = time.time()
+
             # Latih model
             model.fit(X_train, y_train)
+
+            # selesai menghitung training
+            end_time = time.time()
+            training_duration = end_time - start_time  # Durasi training dalam detik            
+
+            # Prediksi model
             y_pred = model.predict(X_test)
 
             # Menghitung metrik evaluasi
@@ -208,7 +195,7 @@ def upload():
             specificity = cm[0, 0] / (cm[0, 0] + cm[0, 1])
 
             # K-Fold Cross Validation
-            kf = KFold(n_splits=5, shuffle=True, random_state=42)
+            kf = KFold(n_splits=16, shuffle=True, random_state=42)
             cv_scores = cross_val_score(model, X, y, cv=kf, scoring='accuracy')
 
             # Hasil evaluasi dalam dictionary
@@ -261,17 +248,18 @@ def upload():
             buf2.close()
             plt.close()
 
-            # Render template upload.html dan tampilkan hasil
+            # Render template training.html dan tampilkan hasil
             return render_template(
-                'upload.html',
+                'training.html',
                 evaluation_results=evaluation_results,
+                training_duration=round(training_duration, 3),
                 preview=df.head(20).to_html(classes='table table-striped'),
                 confusion_matrix_plot=image_base64_confusion,
                 fraud_distribution_plot=image_base64_barplot
             )
 
-    # Jika GET request, hanya render form upload
-    return render_template('upload.html')
+    # Jika GET request, hanya render form training
+    return render_template('training.html')
 
 # ======================================================
 # =                History Prediction Page             =
@@ -366,5 +354,5 @@ def currency():
 # =                   Main Program                     =
 # ======================================================
 if __name__ == '__main__':
-    # Jalankan aplikasi Flask dalam mode debug
+   
     app.run(debug=True)

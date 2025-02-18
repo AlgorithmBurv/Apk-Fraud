@@ -86,8 +86,8 @@ h1 {
   background-color: #e6f7ff;
 }
 .scrollable-table {
-  max-height: 400px; /* Tinggi maksimal tabel */
-  overflow-y: auto; /* Mengaktifkan scroll vertikal */
-  overflow-x: auto; /* Mengaktifkan scroll horizontal jika perlu */
-  border: 1px solid #ddd; /* Opsional: menambahkan garis batas */
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #ddd;
 }

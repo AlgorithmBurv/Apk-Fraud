@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!--
-      <head> section:
-      - Menentukan karakter encoding, meta viewport untuk responsif
-      - Menambahkan judul halaman
-      - Menyertakan link CSS & library Bootstrap, Font Awesome, Google Fonts, dsb.
-    -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fraud Transaction Prediction</title>
@@ -69,13 +63,12 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('upload') }}">Training</a>
+              <a class="nav-link" href="{{ url_for('training') }}">Training</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
-
     <!--
       Container utama yang menampung dua card:
       1) Transaction Prediction Form (single prediction)
@@ -148,6 +141,22 @@
             />
           </div>
 
+          <!-- Id Name Orig (Sender) -->
+          <div class="mb-3">
+            <label for="nameOrig" class="form-label"
+              >Id Name Orig (Sender)</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="nameOrig"
+              name="nameOrig"
+              placeholder="Enter Id Name Orig (Sender)"
+              step="1"
+              required
+            />
+          </div>
+
           <!-- Sender's Old Balance -->
           <div class="mb-3">
             <label for="oldbalanceOrig" class="form-label"
@@ -176,6 +185,21 @@
               name="newbalanceOrig"
               placeholder="Enter sender's new balance"
               step="0.01"
+              required
+            />
+          </div>
+          <!-- Id Name Dest (Recipient)-->
+          <div class="mb-3">
+            <label for="nameDest" class="form-label"
+              >Id Name Dest (Recipient)</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="nameDest"
+              name="nameDest"
+              placeholder="Enter Id Name Dest (Recipient)"
+              step="1"
               required
             />
           </div>
@@ -227,7 +251,7 @@
         </p>
 
         <!--
-          Form dengan enctype="multipart/form-data" untuk upload CSV file
+          Form untuk upload CSV file
           juga dikirim ke /predict (POST).
         -->
         <form
@@ -293,8 +317,10 @@
                   <th>Type</th>
                   <th>Type 2</th>
                   <th>Amount</th>
+                  <th>Name Orig</th>
                   <th>Old Balance Orig</th>
                   <th>New Balance Orig</th>
+                  <th>Name Dest</th>
                   <th>Old Balance Dest</th>
                   <th>New Balance Dest</th>
                   <th>Prediction</th>
@@ -309,8 +335,10 @@
                   <td>{{ row['type'] }}</td>
                   <td>{{ row['type2'] }}</td>
                   <td>{{ row['amount'] }}</td>
+                  <td>{{ row['nameOrig'] }}</td>
                   <td>{{ row['oldbalanceOrig'] }}</td>
                   <td>{{ row['newbalanceOrig'] }}</td>
+                  <td>{{ row['nameDest'] }}</td>
                   <td>{{ row['oldbalanceDest'] }}</td>
                   <td>{{ row['newbalanceDest'] }}</td>
                   <td>{{ row['isFraud'] }}</td>
@@ -330,10 +358,6 @@
       </div>
     </div>
 
-    <!--
-      Script Bootstrap JS untuk komponen interaktif.
-      Berisi bundle minified (popper + bootstrap.js)
-    -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
